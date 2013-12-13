@@ -3,12 +3,12 @@
  * PDO userspace driver proxying calls to PHP OCI8 driver
  *
  * @category Database
- * @package yajra/PDO-via-OCI8
+ * @package byends/PDO-via-OCI8
  * @author Mathieu Dumoulin <crazyone@crazycoders.net>
  * @copyright Copyright (c) 2013 Mathieu Dumoulin (http://crazycoders.net/)
  * @license MIT
  */
-namespace yajra\Pdo;
+namespace byends\Pdo;
 
 /**
  * Oci8 class to mimic the interface of the PDO class
@@ -17,8 +17,7 @@ namespace yajra\Pdo;
  * that instanceof checks and type-hinting of existing code will work
  * seamlessly.
  */
-class Oci8
-    extends \PDO
+class Oci8 extends \PDO
 {
 
     /**
@@ -44,19 +43,15 @@ class Oci8
 
     /**
      * Constructor
-     *
+     * 
      * @param string $dsn
-     * @param string $username
-     * @param string $passwd
+     * @param null $username
+     * @param null $password
      * @param array $options
-     * @return void
+     * @throws \PDOException
      */
-    public function __construct($dsn,
-                                $username = null,
-                                $password = null,
-                                array $options = array())
+    public function __construct($dsn, $username = null, $password = null, array $options = array())
     {
-
         //Parse the DSN
         $parsedDsn = self::parseDsn($dsn, array('charset'));
 
@@ -110,12 +105,12 @@ class Oci8
      * Prepares a statement for execution and returns a statement object
      *
      * @param string $statement
-     * @param array $options
-     * @return Pdo_Oci8_Statement
+     * @param null $options
+     * @return \PDOStatement|\byends\Pdo\Oci8\Statement
+     * @throws \PDOException
      */
     public function prepare($statement, $options = null)
     {
-
         // Get instance options
         if($options == null) $options = $this->_options;
         //Replace ? with a pseudo named parameter
@@ -144,13 +139,14 @@ class Oci8
             $options = array();
         }
 
-        return new \yajra\Pdo\Oci8\Statement($sth, $this, $options);
+        return new \byends\Pdo\Oci8\Statement($sth, $this, $options);
     }
 
     /**
      * Begins a transaction (turns off autocommit mode)
      *
-     * @return void
+     * @return bool
+     * @throws \PDOException
      */
     public function beginTransaction()
     {
@@ -176,6 +172,7 @@ class Oci8
      * Commits all statements issued during a transaction and ends the transaction
      *
      * @return bool
+     * @throws \PDOException
      */
     public function commit()
     {
@@ -195,6 +192,7 @@ class Oci8
      * Rolls back a transaction
      *
      * @return bool
+     * @throws \PDOException
      */
     public function rollBack()
     {
@@ -314,7 +312,8 @@ class Oci8
     /**
      * Retrieve a database connection attribute
      *
-     * @return mixed
+     * @param int $attribute
+     * @return mixed|null
      */
     public function getAttribute($attribute)
     {
@@ -341,9 +340,8 @@ class Oci8
      * Special non PDO function used to start descriptor in the database
      * Remember to call oci_free_statement() on your cursor
      *
-     * @access public
-     *
-     * @return mixed Value.
+     * @param int $type
+     * @return \OCI_Lob
      */
     public function getNewDescriptor($type = OCI_D_LOB)
     {

@@ -11,7 +11,7 @@ class Oci8Test extends PHPUnit_Framework_TestCase
     {
 
         //Parse the $dsn and compare to result
-        $result = \yajra\Pdo\Oci8::parseDsn($dsn, array('charset'));
+        $result = \byends\Pdo\Oci8::parseDsn($dsn, array('charset'));
         $this->assertEquals($expectedResult, $result);
 
     }

@@ -3,12 +3,12 @@
  * PDO userspace driver proxying calls to PHP OCI8 driver
  *
  * @category Database
- * @package yajra/PDO-via-OCI8
+ * @package byends/PDO-via-OCI8
  * @author Mathieu Dumoulin <crazyone@crazycoders.net>
  * @copyright Copyright (c) 2013 Mathieu Dumoulin (http://crazycoders.net/)
  * @license MIT
  */
-namespace yajra\Pdo\Oci8;
+namespace byends\Pdo\Oci8;
 
 /**
  * Oci8 Statement class to mimic the interface of the PDOStatement class
@@ -17,8 +17,7 @@ namespace yajra\Pdo\Oci8;
  * this so that instanceof check and type-hinting of existing code will work
  * seamlessly.
  */
-class Statement
-    extends \PDOStatement
+class Statement extends \PDOStatement
 {
 
     /**
@@ -67,15 +66,12 @@ class Statement
      * Constructor
      *
      * @param resource $sth Statement handle created with oci_parse()
-     * @param Pdo_Oci8 $pdoOci8 The Pdo_Oci8 object for this statement
+     * @param \byends\Pdo\Oci8 $pdoOci8  The Pdo_Oci8 object for this statement
      * @param array $options Options for the statement handle
-     * @return void
+     * @throws \PDOException
      */
-    public function __construct($sth,
-                                \yajra\Pdo\Oci8 $pdoOci8,
-                                array $options = array())
+    public function __construct($sth,\byends\Pdo\Oci8 $pdoOci8, array $options = array())
     {
-
         if (strtolower(get_resource_type($sth)) != 'oci8 statement') {
             throw new \PDOException(
                 'Resource expected of type oci8 statement; '
@@ -90,8 +86,9 @@ class Statement
     /**
      * Executes a prepared statement
      *
-     * @param array $inputParams
+     * @param null $inputParams
      * @return bool
+     * @throws Exceptions\SqlException
      */
     public function execute($inputParams = null)
     {
@@ -111,7 +108,7 @@ class Statement
         if($result != true)
         {
             $oci_error = ocierror($this->_sth);
-            throw new \yajra\Pdo\Oci8\Exceptions\SqlException($oci_error['message'], $oci_error['code']);
+            throw new \byends\Pdo\Oci8\Exceptions\SqlException($oci_error['message'], $oci_error['code']);
         }
         return $result;
     }
@@ -119,10 +116,10 @@ class Statement
     /**
      * Fetches the next row from a result set
      *
-     * @param int $fetchStyle
+     * @param int|null $fetchStyle
      * @param int $cursorOrientation
-     * @param int $cursorOffset
-     * @return mixed
+     * @param int $offset
+     * @return array|bool|mixed|object
      */
     public function fetch($fetchStyle = \PDO::FETCH_BOTH,
                           $cursorOrientation = \PDO::FETCH_ORI_NEXT,
@@ -388,7 +385,8 @@ class Statement
     /**
      * Retrieve a statement handle attribute
      *
-     * @return mixed
+     * @param int $attribute
+     * @return mixed|null
      */
     public function getAttribute($attribute)
     {
