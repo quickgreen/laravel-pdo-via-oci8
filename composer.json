@@ -1,11 +1,11 @@
 {
-    "name": "byends/laravel-pdo-via-oci8",
+    "name": "quickgreen/laravel-pdo-via-oci8",
     "description": "PDO userspace driver proxying calls to PHP OCI8 driver",
     "license": "MIT",
     "authors": [
         {
-            "name": "byends",
-            "email": "byends@gmail.com"
+            "name": "quickgreen",
+            "email": "quickgreen@gmail.com"
         }
     ],
     "require-dev": {
